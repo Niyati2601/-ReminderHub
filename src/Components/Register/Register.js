@@ -20,7 +20,6 @@ const Register = () => {
         registerUrl,
         data
       );
-      console.log(response);
       if (response.data.message === "User Already exists") {
         toast.error(ERROR_MESSAGES.USER_ALREADY_EXISTS);
       } else {

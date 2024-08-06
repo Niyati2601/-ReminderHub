@@ -12,8 +12,10 @@ import {
   addReminderUrl,
 } from "../../utils/Constants";
 import { MESSAGES, ERROR_MESSAGES } from "../../utils/Constants";
+import notification from '../../notification.mp3';
 
 let id = localStorage.getItem("id");
+
 const Reminder = () => {
   const [inputs, setInputs] = useState({
     title: "",
@@ -45,7 +47,7 @@ const Reminder = () => {
         toast.success(MESSAGES.REMINDER_UPDATED);
         try {
           const reminderToEdit = reminders[editingIndex];
-          await axios.put(
+          await axios.patch(
             `${API_BASE_URL}${EDIT_REMINDER_ENDPOINT}/${reminderToEdit._id}`,
             inputs
           );
@@ -53,7 +55,7 @@ const Reminder = () => {
           toast.error(ERROR_MESSAGES.ERROR_UPDATING_REMINDER);
         }
       } else {
-        setReminders([...reminders, inputs]);
+        setReminders([...reminders, { ...inputs, notified: false }]);
         toast.success(MESSAGES.REMINDER_ADDED);
         try {
           await axios.post(addReminderUrl, {
@@ -105,10 +107,11 @@ const Reminder = () => {
           `${API_BASE_URL}${GET_REMINDER_ENDPOINT}/${id}`
         );
         if (Array.isArray(response.data.list)) {
-          setReminders(response.data.list);
+          // Include notified status in fetched reminders
+          setReminders(response.data.list.map(reminder => ({ ...reminder, notified: reminder.notified || false })));
         }
       } catch (error) {
-        // toast.error(ERROR_MESSAGES.ERROR_FETCHING_REMINDERS);
+        toast.error(ERROR_MESSAGES.ERROR_FETCHING_REMINDERS);
       }
     };
 
@@ -118,15 +121,30 @@ const Reminder = () => {
   }, []);
 
   useEffect(() => {
-    const scheduleNotifications = () => {
-      const currentDate = new Date().toLocaleDateString();
-      const reminderDate = new Date(inputs.date).toLocaleDateString();
-      if (currentDate === reminderDate) {
-        // toast.success(`Reminder: ${inputs.title}`);
-      }
+    const checkReminders = () => {
+      const now = new Date();
+      reminders.forEach((reminder) => {
+        const reminderDate = new Date(reminder.date);
+        if (
+          now.getFullYear() === reminderDate.getFullYear() &&
+          now.getMonth() === reminderDate.getMonth() &&
+          now.getDate() === reminderDate.getDate() &&
+          now.getHours() === reminderDate.getHours() &&
+          now.getMinutes() === reminderDate.getMinutes() &&
+          !reminder.notified
+        ) {
+          toast.success(`Reminder: ${reminder.title}`);
+            const audio = new Audio(notification);
+            audio.play()
+            reminder.notified = true;
+        }
+      });
     };
-    scheduleNotifications();
-  }, [inputs.date, inputs.title]);
+    
+
+    const intervalId = setInterval(checkReminders, 2000); 
+    return () => clearInterval(intervalId);
+  }, [reminders]);
 
   return (
     <div className="reminders" style={{ backgroundColor: "#fff" }}>
@@ -140,7 +158,7 @@ const Reminder = () => {
                     className="text-center my-3 pb-3"
                     style={{ color: "#023047" }}
                   >
-                    Reminder App
+                     Add Your Reminder
                   </h4>
 
                   <div className="row row-cols-lg-auto justify-content-center align-items-center mb-4 pb-2">

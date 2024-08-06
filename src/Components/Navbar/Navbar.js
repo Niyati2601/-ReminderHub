@@ -29,7 +29,7 @@ const Navbar = () => {
          🔔 ReminderHub
         </Link>
         <div className="collapse navbar-collapse" id="navbarSupportedContent">
-          <ul class="navbar-nav me-auto mb-2 mb-lg-0 g-2">
+          <ul className="navbar-nav me-auto mb-2 mb-lg-0 g-2">
             <li className="nav-item">
               <Link
                 className="nav-link active"

@@ -58,6 +58,7 @@ const Login = () => {
         <input
           type="email"
           id="email"
+          className="border-bottom"
           placeholder="abc@gmail.com"
           {...register("email", {
             required: ERROR_MESSAGES.EMAIL_REQUIRED,
@@ -79,6 +80,7 @@ const Login = () => {
         <input
           type="password"
           id="password"
+          className="border-bottom"
           placeholder="Enter your password"
           {...register("password", {
             required: ERROR_MESSAGES.PASSWORD_REQUIRED,

@@ -19,6 +19,8 @@ export const ERROR_MESSAGES = {
     ERROR_UPDATING_REMINDER: "Error updating reminder",
     PLEASE_REGISTER: "Please Register..",
     ERROR_ADDING_REMINDER: "Error adding reminder",
+    ERROR_DELETING_REMINDER: "Error deleting reminder",
+    ERROR_FETCHING_REMINDERS: "Error fetching reminders",
 };
 
 export const MESSAGES = {
